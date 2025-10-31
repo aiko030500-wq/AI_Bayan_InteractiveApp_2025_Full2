@@ -17,3 +17,30 @@ body{font-family:Arial, sans-serif;background:#f5e6d3;margin:0} .top-hero{displa
 }
 .global-progress { font-size: 16px; }
 @keyframes flyStar { 0%{transform:scale(.5) translateY(0);opacity:1} 100%{transform:scale(1.5) translateY(-100px);opacity:0} }
+
+.ai-bayan-btn {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: #0078ff;
+  border: none;
+  border-radius: 50%;
+  width: 70px;
+  height: 70px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+  cursor: pointer;
+}
+.ai-bayan-btn img {
+  width: 60%;
+}
+#chatBox {
+  position: fixed;
+  bottom: 100px;
+  right: 20px;
+  width: 320px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+  overflow: hidden;
+}
+.hidden { display: none; }

@@ -141,6 +141,7 @@ document.addEventListener("DOMContentLoaded", () => {
           score++;
           vocabScore.textContent = score;
           popStar();
+          if (correct) { score++; popStar(); addScore("Vocabulary", 1); }
         }
         setTimeout(() => {
           if (current < vocabData.length - 1) {

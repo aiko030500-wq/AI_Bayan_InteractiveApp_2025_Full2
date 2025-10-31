@@ -144,6 +144,7 @@ document.addEventListener("DOMContentLoaded", () => {
           score++;
           olimpScore.textContent = score;
           popStar();
+          if (index === q.a) { score++; popStar(); addScore("Grammar", 1); }
         }
         setTimeout(() => {
           if (current < olimpData.length - 1) {

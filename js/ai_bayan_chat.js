@@ -1,1 +1,20 @@
-(()=>{const btn=document.getElementById('aiBayanBtn'),box=document.getElementById('chatBox'),closeBtn=document.getElementById('closeChat'),sendBtn=document.getElementById('sendBtn'),input=document.getElementById('chatInput'),msgs=document.getElementById('chatMessages');function push(role,text){const d=document.createElement('div');d.className=role;d.style.margin='6px 0';d.innerHTML=`<b>${role==='you'?'You':'AI Bayan'}:</b> ${text}`;msgs.appendChild(d);msgs.scrollTop=msgs.scrollHeight;}function aiReply(user){user=user.toLowerCase();if(user.includes('hello')||user.includes('hi'))return 'Hello! How can I help you with English? 😊';if(user.includes('grammar'))return 'Try the Grammar Olympiad to practice tenses, articles, and conditionals.';if(user.includes('vocab'))return 'Vocabulary Olympiad helps with synonyms, antonyms and phrasal verbs.';return 'Great! Choose a section in the menu or ask me anything specific.';}if(btn){btn.addEventListener('click',()=>{box.classList.toggle('show');});}if(closeBtn){closeBtn.addEventListener('click',()=>box.classList.remove('show'));}if(sendBtn){sendBtn.addEventListener('click',()=>{const v=input.value.trim();if(!v)return;push('you',v);input.value='';setTimeout(()=>push('ai',aiReply(v)),250);});}})();
+document.addEventListener("DOMContentLoaded", () => {
+  const btn = document.getElementById("aiBayanBtn");
+  const chatBox = document.getElementById("chatBox");
+  const closeChat = document.getElementById("closeChat");
+  const sendBtn = document.getElementById("sendBtn");
+  const chatInput = document.getElementById("chatInput");
+  const chatMessages = document.getElementById("chatMessages");
+
+  btn.onclick = () => chatBox.classList.toggle("hidden");
+  closeChat.onclick = () => chatBox.classList.add("hidden");
+
+  sendBtn.onclick = () => {
+    const msg = chatInput.value.trim();
+    if (!msg) return;
+    chatMessages.innerHTML += `<div class='user-msg'>${msg}</div>`;
+    chatInput.value = "";
+    chatMessages.innerHTML += `<div class='ai-msg'>🤖 Hello! I'm Bayan, your English buddy!</div>`;
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+  };
+});

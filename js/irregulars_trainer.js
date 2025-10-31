@@ -201,6 +201,7 @@ document.addEventListener("DOMContentLoaded", () => {
           irScore++;
           irScoreEl.textContent = irScore;
           if (typeof window.popStar === "function") window.popStar();
+          if (i === q.a) { irScore++; popStar(); addScore("Irregular", 1); }
         }
         setTimeout(() => { irIndex++; renderIrregular(); }, 250);
       };

@@ -6,20 +6,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const chatInput = document.getElementById("chatInput");
   const chatMessages = document.getElementById("chatMessages");
 
-  btn.onclick = () => chatBox.classList.toggle("hidden");
-  closeChat.onclick = () => chatBox.classList.add("hidden");
-
-  sendBtn.onclick = () => {
-    const msg = chatInput.value.trim
-
-    document.addEventListener("DOMContentLoaded", () => {
-  const btn = document.getElementById("aiBayanBtn");
-  const chatBox = document.getElementById("chatBox");
-  const closeChat = document.getElementById("closeChat");
-  const sendBtn = document.getElementById("sendBtn");
-  const chatInput = document.getElementById("chatInput");
-  const chatMessages = document.getElementById("chatMessages");
-
   // показать / скрыть окно
   btn.onclick = () => chatBox.classList.toggle("hidden");
   closeChat.onclick = () => chatBox.classList.add("hidden");
@@ -28,7 +14,7 @@ document.addEventListener("DOMContentLoaded", () => {
   sendBtn.onclick = sendMessage;
   chatInput.addEventListener("keypress", (e) => {
     if (e.key === "Enter") sendMessage();
-  }
+  });
 
   function sendMessage() {
     const msg = chatInput.value.trim();
@@ -52,3 +38,10 @@ document.addEventListener("DOMContentLoaded", () => {
     return "Interesting! Could you tell me more?";
   }
 });
+
+    
+
+  
+    
+
+  

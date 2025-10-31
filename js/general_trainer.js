@@ -1,204 +1,229 @@
+
 // ==============================
-// 📘 AI Bayan — General English Trainer (10 modules, 72 questions)
+// 📘 AI Bayan — General English Trainer (v2025)
+// Includes 11 modules: Irregulars + 10 topics
 // ==============================
+
 document.addEventListener("DOMContentLoaded", () => {
-  const tabs = document.querySelectorAll(".general-tabs .subtab");
-  const titleEl = document.getElementById("genTitle");
-  const instrEl = document.getElementById("genInstr");
-  const contentEl = document.getElementById("genContent");
-  const scoreEl = document.getElementById("genScore");
-  const btnPrev = document.getElementById("genPrev");
-  const btnNext = document.getElementById("genNext");
-  if (!titleEl || !contentEl) return;
+  const genTitle = document.getElementById("genTitle");
+  const genInstr = document.getElementById("genInstr");
+  const genContent = document.getElementById("genContent");
+  const genScore = document.getElementById("genScore");
+  const nextBtn = document.getElementById("genNext");
+  const prevBtn = document.getElementById("genPrev");
 
-  // ------------------ DATA ------------------
-  const DATA = {
-    "mod-clock": {
-      title: "🕒 Clocks (AM/PM)",
-      instr: "Choose the correct time expression.",
-      items: [
-        { q: "07:15 — ?", options: ["seven fifteen AM", "seven fifteen PM", "quarter to seven", "quarter past eight"], a: 0 },
-        { q: "09:30 — ?", options: ["half past nine AM", "half past nine PM", "nine to half", "half to nine"], a: 0 },
-        { q: "6:45 PM — ?", options: ["quarter to six AM", "quarter to seven PM", "quarter past seven PM", "six forty-five AM"], a: 1 },
-        { q: "12:00 at midday — ?", options: ["12:00 AM", "12:00 PM", "00:12 AM", "12 PM or noon"], a: 3 },
-        { q: "10:05 — ?", options: ["five past ten", "ten past five", "five to ten", "ten to five"], a: 0 },
-        { q: "“Twenty-five past three” — ?", options: ["03:35", "03:25", "03:45", "02:35"], a: 1 }
-      ]
-    },
+  if (!genContent) return;
 
-    "mod-tobe": {
-      title: "✅ Verb “to be”",
-      instr: "Choose the correct form of the verb “to be”.",
-      items: [
-        { q: "I ___ a student.", options: ["am", "is", "are", "be"], a: 0 },
-        { q: "They ___ happy.", options: ["am", "is", "are", "was"], a: 2 },
-        { q: "He ___ at home yesterday.", options: ["were", "was", "are", "be"], a: 1 },
-        { q: "We ___ in Astana last year.", options: ["was", "were", "is", "am"], a: 1 },
-        { q: "This city ___ very old.", options: ["am", "is", "are", "were"], a: 1 },
-        { q: "You ___ late for class.", options: ["is", "are", "am", "was"], a: 1 },
-        { q: "There ___ a book on the table.", options: ["are", "is", "am", "be"], a: 1 },
-        { q: "She ___ my best friend.", options: ["were", "is", "are", "be"], a: 1 }
-      ]
-    },
+  // 🌟 Score and question control
+  let currentQ = 0;
+  let score = 0;
+  let currentModule = "mod-irregulars";
 
-    "mod-phon": {
-      title: "🔤 Phonetics (Vowels)",
-      instr: "Pick the correct sound type.",
-      items: [
-        { q: "Type 1 (A = /eɪ/):", options: ["cat", "cake", "cap", "can"], a: 1 },
-        { q: "Type 2 (short /æ/):", options: ["made", "mate", "cat", "late"], a: 2 },
-        { q: "Type 3 (r-controlled /ɜː/):", options: ["bird", "bid", "bed", "bad"], a: 0 },
-        { q: "Type 4 (silent e → long i):", options: ["rid", "ride", "read", "raid"], a: 1 },
-        { q: "E says its name /iː/:", options: ["pet", "scene", "pen", "ten"], a: 1 },
-        { q: "Silent e → long a:", options: ["hat", "hate", "had", "hut"], a: 1 },
-        { q: "Short /ɪ/:", options: ["hit", "hide", "hike", "haze"], a: 0 },
-        { q: "R-controlled /ɔːr/:", options: ["for", "foe", "far", "fire"], a: 0 }
-      ]
-    },
+  // ======================
+  // MODULE DATA
+  // ======================
+  const modules = {};
 
-    "mod-silent": {
-      title: "🤫 Silent Letters",
-      instr: "Choose the word with the silent letter.",
-      items: [
-        { q: "Silent K:", options: ["knife", "king", "kid", "kite"], a: 0 },
-        { q: "Silent B:", options: ["climb", "bribe", "cab", "tube"], a: 0 },
-        { q: "Silent W:", options: ["write", "wet", "wife", "wide"], a: 0 },
-        { q: "Silent GH:", options: ["night", "ghost", "roughly", "bright"], a: 0 },
-        { q: "Silent T:", options: ["castle", "taste", "test", "tasty"], a: 0 },
-        { q: "Silent L:", options: ["calm", "call", "cold", "coal"], a: 0 }
-      ]
-    },
-
-    "mod-articles": {
-      title: "🔹 Articles",
-      instr: "Choose the correct article.",
-      items: [
-        { q: "I saw ___ interesting film.", options: ["a", "an", "the", "Ø"], a: 1 },
-        { q: "She is ___ teacher.", options: ["a", "an", "the", "Ø"], a: 0 },
-        { q: "___ Sun rises in the east.", options: ["A", "An", "The", "Ø"], a: 2 },
-        { q: "We visited ___ UK.", options: ["a", "an", "the", "Ø"], a: 2 },
-        { q: "I love ___ music.", options: ["a", "an", "the", "Ø"], a: 3 },
-        { q: "He bought ___ umbrella and ___ apple.", options: ["a / a", "a / an", "an / a", "the / a"], a: 1 },
-        { q: "She is playing ___ piano.", options: ["a", "an", "the", "Ø"], a: 2 },
-        { q: "We need ___ sugar.", options: ["a", "an", "the", "Ø"], a: 3 }
-      ]
-    },
-
-    "mod-phrasal": {
-      title: "🧩 Phrasal Verbs",
-      instr: "Pick the correct meaning.",
-      items: [
-        { q: "“put on” (a jacket):", options: ["remove", "wear", "repair", "close"], a: 1 },
-        { q: "“take off” (a hat):", options: ["remove", "begin", "arrive", "improve"], a: 0 },
-        { q: "“look after” a child:", options: ["search", "care for", "visit", "avoid"], a: 1 },
-        { q: "“turn on” the TV:", options: ["start", "stop", "break", "carry"], a: 0 },
-        { q: "“give up” smoking:", options: ["continue", "stop", "start", "share"], a: 1 },
-        { q: "“pick up” new words:", options: ["learn casually", "throw away", "arrange", "put down"], a: 0 },
-        { q: "“look for”:", options: ["search", "watch", "ignore", "prepare"], a: 0 },
-        { q: "“run out of” time:", options: ["finish supply", "start quickly", "save more", "wait"], a: 0 }
-      ]
-    },
-
-    "mod-syn": {
-      title: "🧠 Synonyms",
-      instr: "Choose the word with the same meaning.",
-      items: [
-        { q: "assist →", options: ["help", "hide", "hit", "hire"], a: 0 },
-        { q: "rapid →", options: ["slow", "quick", "quiet", "rare"], a: 1 },
-        { q: "purchase →", options: ["sell", "buy", "bring", "borrow"], a: 1 },
-        { q: "elderly →", options: ["ancient", "old", "young", "tiny"], a: 1 },
-        { q: "improve →", options: ["worsen", "enhance", "refuse", "remove"], a: 1 },
-        { q: "require →", options: ["need", "note", "notice", "none"], a: 0 },
-        { q: "reduce →", options: ["increase", "decrease", "declare", "defeat"], a: 1 }
-      ]
-    },
-
-    "mod-ant": {
-      title: "⚡ Antonyms",
-      instr: "Choose the opposite meaning.",
-      items: [
-        { q: "polite →", options: ["rude", "calm", "kind", "quiet"], a: 0 },
-        { q: "expand →", options: ["extend", "increase", "shrink", "show"], a: 2 },
-        { q: "ancient →", options: ["modern", "normal", "middle", "minor"], a: 0 },
-        { q: "permit →", options: ["allow", "forgive", "deny", "delay"], a: 2 },
-        { q: "difficult →", options: ["hard", "easy", "rare", "safe"], a: 1 },
-        { q: "include →", options: ["contain", "exclude", "insert", "explain"], a: 1 },
-        { q: "visible →", options: ["invisible", "official", "pleasant", "possible"], a: 0 }
-      ]
-    },
-
-    "mod-num": {
-      title: "🔢 Numerals",
-      instr: "Choose the correct numeral form.",
-      items: [
-        { q: "Which is ordinal?", options: ["twenty", "second", "hundred", "thirty"], a: 1 },
-        { q: "1,504 →", options: ["one thousand five hundred four", "one five zero four", "fifteen hundred forty", "one thousand and five hundred"], a: 0 },
-        { q: "21/03 →", options: ["the twenty-first of March", "twenty-one March", "twenty-first March", "the twenty-one of March"], a: 0 },
-        { q: "Cardinal number:", options: ["third", "tenth", "eleven", "first"], a: 2 },
-        { q: "08:00 →", options: ["eight o'clock", "eighteen", "eight and zero", "zero eight"], a: 0 },
-        { q: "23rd →", options: ["twenty-threerd", "twenty-third", "twenty-three-th", "twentythird"], a: 1 }
-      ]
-    },
-
-    "mod-plural": {
-      title: "👥 Singular & Plural",
-      instr: "Choose the correct form.",
-      items: [
-        { q: "child →", options: ["childs", "childes", "children", "childrens"], a: 2 },
-        { q: "mouse →", options: ["mouses", "mice", "mouse", "mices"], a: 1 },
-        { q: "two ___", options: ["mans", "men", "man", "mens"], a: 1 },
-        { q: "many ___", options: ["information", "piece of information", "informations", "informationses"], a: 1 },
-        { q: "tomato →", options: ["tomatos", "tomatoes", "tomatoe", "tomatoeses"], a: 1 },
-        { q: "___ news is good.", options: ["These", "This", "Those", "They"], a: 1 },
-        { q: "one sheep — two ___", options: ["sheeps", "sheep", "sheepses", "sheepes"], a: 1 },
-        { q: "person →", options: ["persons", "peoples", "people", "persones"], a: 2 }
-      ]
-    }
+  // 1️⃣ Irregular Verbs
+  modules["mod-irregulars"] = {
+    title: "🔁 Irregular Verbs",
+    instr: "Choose the correct past form of each verb:",
+    data: [
+      { q: "go → ?", options: ["went", "goed", "gone", "goes"], a: 0 },
+      { q: "see → ?", options: ["saw", "seed", "seen", "see"], a: 0 },
+      { q: "come → ?", options: ["came", "comed", "comes", "come"], a: 0 },
+      { q: "eat → ?", options: ["ate", "eated", "eaten", "eat"], a: 0 },
+      { q: "write → ?", options: ["wrote", "writed", "writes", "write"], a: 0 },
+      { q: "run → ?", options: ["ran", "runned", "run", "running"], a: 0 }
+    ]
   };
 
-  // -----------------------------------------
-  let current = "mod-clock", idx = 0, score = 0;
+  // 2️⃣ Clock
+  modules["mod-clock"] = {
+    title: "🕒 Clock & Time",
+    instr: "Choose the correct time expression:",
+    data: [
+      { q: "07:30 = ?", options: ["half past seven", "seven and half", "thirty seven", "seven thirty past"], a: 0 },
+      { q: "15:15 = ?", options: ["quarter past three", "three fifteen", "quarter to three", "fifteen three"], a: 0 },
+      { q: "20:45 = ?", options: ["quarter to nine", "nine quarter", "twenty forty-five", "eight quarter"], a: 0 },
+      { q: "12:00 = ?", options: ["twelve o’clock", "midday clock", "twelve sharp", "half twelve"], a: 0 },
+    ]
+  };
 
-  function loadModule(key) {
-    current = key;
-    idx = 0;
-    score = 0;
-    scoreEl.textContent = score;
-    render();
-  }
+  // 3️⃣ To Be
+  modules["mod-tobe"] = {
+    title: "✅ Verb To Be",
+    instr: "Choose the correct form of ‘to be’:",
+    data: [
+      { q: "I ___ a student.", options: ["is", "are", "am", "be"], a: 2 },
+      { q: "They ___ happy.", options: ["is", "are", "am", "was"], a: 1 },
+      { q: "She ___ at home.", options: ["are", "is", "am", "were"], a: 1 },
+      { q: "We ___ friends.", options: ["am", "is", "are", "been"], a: 2 },
+    ]
+  };
 
-  function render() {
-    const mod = DATA[current];
-    const q = mod.items[idx];
-    titleEl.textContent = mod.title;
-    instrEl.textContent = mod.instr;
-    contentEl.innerHTML = `
-      <h3>${idx + 1}/${mod.items.length}</h3>
-      <p>${q.q}</p>
-      ${q.options.map((opt, i) => `<button class="option" data-i="${i}">${opt}</button>`).join("")}
+  // 4️⃣ Phonetics
+  modules["mod-phon"] = {
+    title: "🔤 Phonetics — Sounds",
+    instr: "Choose the word with the same sound:",
+    data: [
+      { q: "‘Cat’ rhymes with:", options: ["hat", "cut", "cot", "caught"], a: 0 },
+      { q: "‘See’ sounds like:", options: ["tree", "tea", "say", "sea"], a: 3 },
+      { q: "‘Book’ rhymes with:", options: ["look", "cook", "took", "all"], a: 0 },
+      { q: "‘Fine’ rhymes with:", options: ["nine", "fan", "none", "find"], a: 0 },
+    ]
+  };
+
+  // 5️⃣ Silent Letters
+  modules["mod-silent"] = {
+    title: "🤫 Silent Letters",
+    instr: "Choose the word with a silent letter:",
+    data: [
+      { q: "Which has a silent 'k'?", options: ["know", "king", "kite", "key"], a: 0 },
+      { q: "Which has a silent 'w'?", options: ["write", "water", "wait", "white"], a: 0 },
+      { q: "Which has a silent 'b'?", options: ["climb", "bomb", "cab", "baby"], a: 0 },
+      { q: "Which has a silent 'g'?", options: ["sign", "green", "go", "give"], a: 0 },
+    ]
+  };
+
+  // 6️⃣ Articles
+  modules["mod-articles"] = {
+    title: "🔹 Articles (a/an/the)",
+    instr: "Choose the correct article:",
+    data: [
+      { q: "I saw ___ elephant.", options: ["a", "an", "the", "no article"], a: 1 },
+      { q: "He bought ___ car yesterday.", options: ["a", "an", "the", "no article"], a: 0 },
+      { q: "___ sun is bright today.", options: ["a", "an", "the", "no article"], a: 2 },
+      { q: "She doesn’t like ___ milk.", options: ["a", "an", "the", "no article"], a: 3 },
+    ]
+  };
+
+  // 7️⃣ Phrasal Verbs
+  modules["mod-phrasal"] = {
+    title: "🧩 Phrasal Verbs",
+    instr: "Choose the correct phrasal meaning:",
+    data: [
+      { q: "Turn off", options: ["switch off", "run away", "go out", "look after"], a: 0 },
+      { q: "Look after", options: ["care for", "find", "search", "see"], a: 0 },
+      { q: "Give up", options: ["stop trying", "donate", "stand up", "go down"], a: 0 },
+      { q: "Wake up", options: ["open eyes", "sleep", "stand", "go to bed"], a: 0 },
+    ]
+  };
+
+  // 8️⃣ Synonyms
+  modules["mod-syn"] = {
+    title: "🧠 Synonyms",
+    instr: "Choose the word with similar meaning:",
+    data: [
+      { q: "Big", options: ["large", "small", "tiny", "thin"], a: 0 },
+      { q: "Happy", options: ["sad", "glad", "mad", "angry"], a: 1 },
+      { q: "Quick", options: ["fast", "slow", "late", "lazy"], a: 0 },
+      { q: "Begin", options: ["start", "end", "finish", "close"], a: 0 },
+    ]
+  };
+
+  // 9️⃣ Antonyms
+  modules["mod-ant"] = {
+    title: "⚡ Antonyms",
+    instr: "Choose the opposite word:",
+    data: [
+      { q: "Hot", options: ["cold", "warm", "wet", "dry"], a: 0 },
+      { q: "Old", options: ["new", "young", "modern", "fresh"], a: 0 },
+      { q: "Easy", options: ["hard", "light", "soft", "low"], a: 0 },
+      { q: "Up", options: ["down", "top", "over", "under"], a: 0 },
+    ]
+  };
+
+  // 🔟 Numerals
+  modules["mod-num"] = {
+    title: "🔢 Numerals",
+    instr: "Choose the correct number form:",
+    data: [
+      { q: "15th", options: ["fifteen", "fifteenth", "fifty", "five teen"], a: 1 },
+      { q: "21st", options: ["twenty-one", "twenty-first", "twenty one-th", "twenty firsts"], a: 1 },
+      { q: "100", options: ["hundred", "hundreds", "one hundred", "a hundredth"], a: 2 },
+      { q: "1000", options: ["thousand", "one thousand", "a thousandth", "thousands"], a: 1 },
+    ]
+  };
+
+  // 11️⃣ Plural Nouns
+  modules["mod-plural"] = {
+    title: "👥 Plural Nouns",
+    instr: "Choose the correct plural form:",
+    data: [
+      { q: "Child → ?", options: ["childs", "children", "childes", "childrens"], a: 1 },
+      { q: "Foot → ?", options: ["foots", "feets", "feet", "footes"], a: 2 },
+      { q: "Man → ?", options: ["mans", "mens", "man", "men"], a: 3 },
+      { q: "Mouse → ?", options: ["mouses", "mice", "mouse", "meese"], a: 1 },
+    ]
+  };
+
+  // ======================
+  // RENDER FUNCTION
+  // ======================
+  function showQuestion() {
+    const mod = modules[currentModule];
+    const q = mod.data[currentQ];
+    genTitle.textContent = mod.title;
+    genInstr.textContent = mod.instr;
+    genContent.innerHTML = `
+      <h3>${currentQ + 1}. ${q.q}</h3>
+      ${q.options
+        .map(
+          (opt, i) =>
+            `<button class="genOpt" data-i="${i}">${opt}</button>`
+        )
+        .join("<br>")}
+      <p class="progress">Question ${currentQ + 1} of ${mod.data.length}</p>
     `;
-    document.querySelectorAll(".option").forEach(btn => {
-      btn.onclick = () => {
-        const choice = parseInt(btn.dataset.i);
-        if (choice === q.a) {
-          score++;
-          scoreEl.textContent = score;
-          popStar?.();
-          btn.classList.add("correct");
-        } else btn.classList.add("wrong");
-        setTimeout(nextQ, 500);
-      };
+    genScore.textContent = score;
+    document.querySelectorAll(".genOpt").forEach((b) => {
+      b.onclick = () => checkAnswer(parseInt(b.dataset.i));
     });
   }
 
-  function nextQ() {
-    const mod = DATA[current];
-    if (++idx < mod.items.length) render();
-    else contentEl.innerHTML = `<h3>🎉 Finished ${mod.title}</h3><p>Your score: ${score}/${mod.items.length}</p>`;
+  function checkAnswer(i) {
+    const mod = modules[currentModule];
+    if (i === mod.data[currentQ].a) {
+      score++;
+      genScore.textContent = score;
+      popStar();
+    }
+    if (currentQ < mod.data.length - 1) {
+      currentQ++;
+      showQuestion();
+    } else {
+      genContent.innerHTML = `<h3>🎉 Module Complete!</h3>
+      <p>Your score: ${score} / ${mod.data.length}</p>`;
+    }
   }
 
-  btnNext.onclick = nextQ;
-  btnPrev.onclick = () => { if (idx > 0) idx--; render(); };
-  tabs.forEach(t => t.onclick = () => { tabs.forEach(b => b.classList.remove("active")); t.classList.add("active"); loadModule(t.dataset.sub); });
-  loadModule(current);
+  // NAVIGATION BUTTONS
+  nextBtn.onclick = () => {
+    if (currentQ < modules[currentModule].data.length - 1) {
+      currentQ++;
+      showQuestion();
+    }
+  };
+  prevBtn.onclick = () => {
+    if (currentQ > 0) {
+      currentQ--;
+      showQuestion();
+    }
+  };
+
+  // TAB SWITCHING
+  document.querySelectorAll(".subtab").forEach((tab) => {
+    tab.onclick = () => {
+      document.querySelectorAll(".subtab").forEach((t) => t.classList.remove("active"));
+      tab.classList.add("active");
+      currentModule = tab.getAttribute("data-sub");
+      currentQ = 0;
+      score = 0;
+      showQuestion();
+    };
+  });
+
+  // INIT
+  showQuestion();
 });

@@ -33,6 +33,7 @@
       <button class="btn tile pink"  data-target="speaking">🗣️ Speaking</button>
       <button class="btn tile gray"  data-target="general">📘 General Trainer</button>
 <button class="btn tile purple" data-target="speaking">🗣️ Speaking Olympiad</button>
+      <button class="btn tile teal" data-target="general">📘 General English Trainer</button>
     </div>
   </section>
 
@@ -90,6 +91,59 @@
       <button class="back" onclick="show('menu')">🏠 Back to Menu</button>
     </div>
   </section>
+  <!-- GENERAL TRAINER -->
+<section id="general" class="screen section">
+  <h2>📘 General English Trainer — A2/B1</h2>
+
+  <!-- Tabs -->
+  <div class="general-tabs">
+    <button class="subtab active" data-sub="mod-clock">🕒 Clock</button>
+    <button class="subtab" data-sub="mod-tobe">✅ To Be</button>
+    <button class="subtab" data-sub="mod-phon">🔤 Phonetics</button>
+    <button class="subtab" data-sub="mod-silent">🤫 Silent Letters</button>
+    <button class="subtab" data-sub="mod-articles">🔹 Articles</button>
+    <button class="subtab" data-sub="mod-phrasal">🧩 Phrasal Verbs</button>
+    <button class="subtab" data-sub="mod-syn">🧠 Synonyms</button>
+    <button class="subtab" data-sub="mod-ant">⚡ Antonyms</button>
+    <button class="subtab" data-sub="mod-num">🔢 Numerals</button>
+    <button class="subtab" data-sub="mod-plural">👥 Plural Nouns</button>
+  </div>
+
+  <!-- Main content -->
+  <div id="generalContent" class="trainer-content">
+    <h3 id="genTitle"></h3>
+    <p id="genInstr"></p>
+    <div id="genContent"></div>
+  </div>
+
+  <!-- Score and navigation -->
+  <div class="scorebar">
+    <span>Score:</span> <b id="genScore">0</b>
+  </div>
+
+  <div class="nav">
+    <button id="genPrev">⬅️ Previous</button>
+    <button id="genNext">➡️ Next</button>
+    <button class="back" onclick="show('menu')">🏠 Back to Menu</button>
+  </div>
+</section>
+
+  <div id="generalContent" class="trainer-content">
+    <h3 id="genTitle"></h3>
+    <p id="genInstr"></p>
+    <div id="genContent"></div>
+  </div>
+
+  <div class="scorebar">
+    <span>Score:</span> <b id="genScore">0</b>
+  </div>
+
+  <div class="nav">
+    <button id="genPrev">⬅️ Previous</button>
+    <button id="genNext">➡️ Next</button>
+    <button class="back" onclick="show('menu')">🏠 Back to Menu</button>
+  </div>
+</section>
 
   <section id="speaking" class="screen section">
     <h2>🗣️ Speaking Olympiad — A2</h2>
@@ -155,5 +209,6 @@
   <script src="js/phonetics_trainer.js"></script>
   <script src="js/general_trainer.js"></script>
   <script src="js/ai_bayan_chat.js"></script>
+  <script src="js/general_trainer.js"></script>
 </body>
 </html>

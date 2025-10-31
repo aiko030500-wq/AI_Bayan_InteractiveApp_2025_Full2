@@ -32,6 +32,7 @@
       <button class="btn tile teal"  data-target="reading">📖 Reading</button>
       <button class="btn tile pink"  data-target="speaking">🗣️ Speaking</button>
       <button class="btn tile gray"  data-target="general">📘 General Trainer</button>
+<button class="btn tile purple" data-target="speaking">🗣️ Speaking Olympiad</button>
     </div>
   </section>
 
@@ -56,6 +57,17 @@
       <button class="back" onclick="show('menu')">🏠 Back to Menu</button>
     </div>
   </section>
+ 
+  <section id="speaking" class="screen section">
+  <h2>🗣️ Speaking Olympiad — A2–B1</h2>
+  <div id="speakingContent"></div>
+  <div class="scorebar"><span>Score:</span> <b id="speakingScore">0</b></div>
+  <div class="nav">
+    <button id="sPrev">⬅️ Previous</button>
+    <button id="sNext">➡️ Next</button>
+    <button class="back" onclick="show('menu')">🏠 Back to Menu</button>
+  </div>
+</section>
 
   <section id="listening" class="screen section">
     <h2>🎧 Listening Olympiad — A2</h2>

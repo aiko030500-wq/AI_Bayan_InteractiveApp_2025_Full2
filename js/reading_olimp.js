@@ -146,7 +146,7 @@ document.addEventListener("DOMContentLoaded", () => {
           if (idx === q.a) {
             score++; scoreEl.textContent = score; if (window.popStar) popStar();
             if (i === q.a) { score++; popStar(); addScore("Reading", 1); }
-          }
+            addScore("Speaking", 1);
         }
         nextStep();
       });

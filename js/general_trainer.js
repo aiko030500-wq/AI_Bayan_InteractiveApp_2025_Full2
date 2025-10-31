@@ -187,6 +187,7 @@ document.addEventListener("DOMContentLoaded", () => {
       score++;
       genScore.textContent = score;
       popStar();
+      if (right) { score++; popStar(); addScore("General", 1); }
     }
     if (currentQ < mod.data.length - 1) {
       currentQ++;

@@ -132,6 +132,7 @@ document.addEventListener("DOMContentLoaded", () => {
         } else {
           const idx = parseInt(e.currentTarget.dataset.i,10);
           if (idx === item.a) { score++; scoreEl.textContent = score; if (window.popStar) popStar(); }
+          if (choice === correct) { score++; popStar(); addScore("Listening", 1); }
         }
         nextStep();
       });

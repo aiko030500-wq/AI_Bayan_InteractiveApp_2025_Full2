@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>AI Bayan 2025</title>
+  <link rel="stylesheet" href="css/style.css"/>
+</head>
+<body>
+  <header class="top-hero">
+    <img src="img/ai_bayan_logo.png" alt="AI Bayan" class="hero-logo"/>
+    <h1 class="brand">AI BAYAN 2025</h1>
+  </header>
+
+  <section id="login" class="screen active">
+    <div class="card login-card">
+      <h2>Welcome to AI Bayan 2025</h2>
+      <label for="nameInput">Your Name:</label>
+      <input id="nameInput" name="username" type="text" placeholder="Enter your name" />
+      <label for="pinInput">Access Code:</label>
+      <input id="pinInput" name="accesscode" type="password" placeholder="Enter access code" />
+      <button id="loginBtn">Login</button>
+    </div>
+  </section>
+
+  <section id="menu" class="screen">
+    <h2 class="menu-title">Main Menu</h2>
+    <div class="menu-grid">
+      <button class="btn tile blue"  data-target="olimp">🏅 Grammar Olympiad</button>
+      <button class="btn tile gold"  data-target="vocab">🧠 Vocabulary</button>
+      <button class="btn tile green" data-target="listening">🎧 Listening</button>
+      <button class="btn tile teal"  data-target="reading">📖 Reading</button>
+      <button class="btn tile pink"  data-target="speaking">🗣️ Speaking</button>
+      <button class="btn tile gray"  data-target="general">📘 General Trainer</button>
+    </div>
+  </section>
+
+  <section id="olimp" class="screen section">
+    <h2>🏅 Grammar Olympiad — A2</h2>
+    <div id="olimpContent"></div>
+    <div class="scorebar"><span>Score:</span> <b id="olimpScore">0</b></div>
+    <div class="nav">
+      <button id="oPrev">⬅️ Previous</button>
+      <button id="oNext">➡️ Next</button>
+      <button class="back" onclick="show('menu')">🏠 Back to Menu</button>
+    </div>
+  </section>
+
+  <section id="vocab" class="screen section">
+    <h2>🧠 Vocabulary Olympiad — A2</h2>
+    <div id="vocabContent"></div>
+    <div class="scorebar"><span>Score:</span> <b id="vocabScore">0</b></div>
+    <div class="nav">
+      <button id="vPrev">⬅️ Previous</button>
+      <button id="vNext">➡️ Next</button>
+      <button class="back" onclick="show('menu')">🏠 Back to Menu</button>
+    </div>
+  </section>
+
+  <section id="listening" class="screen section">
+    <h2>🎧 Listening Olympiad — A2</h2>
+    <div id="listeningContent"></div>
+    <div class="scorebar"><span>Score:</span> <b id="listeningScore">0</b></div>
+    <div class="nav">
+      <button id="lPrev">⬅️ Previous</button>
+      <button id="lNext">➡️ Next</button>
+      <button class="back" onclick="show('menu')">🏠 Back to Menu</button>
+    </div>
+  </section>
+
+  <section id="reading" class="screen section">
+    <h2>📖 Reading Olympiad — A2</h2>
+    <div id="readingContent"></div>
+    <div class="scorebar"><span>Score:</span> <b id="readingScore">0</b></div>
+    <div class="nav">
+      <button id="rPrev">⬅️ Previous</button>
+      <button id="rNext">➡️ Next</button>
+      <button class="back" onclick="show('menu')">🏠 Back to Menu</button>
+    </div>
+  </section>
+
+  <section id="speaking" class="screen section">
+    <h2>🗣️ Speaking Olympiad — A2</h2>
+    <div id="speakingContent"></div>
+    <div class="scorebar"><span>Score:</span> <b id="speakingScore">0</b></div>
+    <div class="nav">
+      <button id="sPrev">⬅️ Previous</button>
+      <button id="sNext">➡️ Next</button>
+      <button class="back" onclick="show('menu')">🏠 Back to Menu</button>
+    </div>
+  </section>
+
+  <section id="general" class="screen section">
+    <h2>📘 General English Trainer — A2</h2>
+    <div class="subtabs">
+      <button class="subtab active" data-sub="irregulars">Irregular Verbs</button>
+      <button class="subtab" data-sub="phonetics">Phonetics</button>
+    </div>
+    <div id="irregulars" class="subscreen active">
+      <div id="irregularsContent"></div>
+      <div class="scorebar"><span>Score:</span> <b id="irregularsScore">0</b></div>
+      <div class="nav">
+        <button id="irPrev">⬅️ Previous</button>
+        <button id="irNext">➡️ Next</button>
+        <button class="back" onclick="show('menu')">🏠 Back to Menu</button>
+      </div>
+    </div>
+    <div id="phonetics" class="subscreen">
+      <div id="phoneticsContent"></div>
+      <div class="scorebar"><span>Score:</span> <b id="phoneticsScore">0</b></div>
+      <div class="nav">
+        <button id="phPrev">⬅️ Previous</button>
+        <button id="phNext">➡️ Next</button>
+        <button class="back" onclick="show('menu')">🏠 Back to Menu</button>
+      </div>
+    </div>
+  </section>
+
+  <button id="aiBayanBtn" class="ai-bayan-btn">
+    <img src="img/ai_bayan_logo.png" alt="AI Bayan"/>
+  </button>
+
+  <div id="chatBox" class="hidden">
+    <div id="chatHeader">
+      <img src="img/ai_bayan_logo.png" alt="AI Bayan" class="chat-logo"/>
+      <span>AI Bayan — English Buddy 💬</span>
+      <button id="closeChat">✖</button>
+    </div>
+    <div id="chatMessages"></div>
+    <div id="chatInputArea">
+      <input id="chatInput" type="text" placeholder="Type your message..."/>
+      <button id="sendBtn">Send</button>
+    </div>
+  </div>
+
+  <script src="js/app.js"></script>
+  <script src="js/grammar_olimp.js"></script>
+  <script src="js/vocab_olimp.js"></script>
+  <script src="js/listening_olimp.js"></script>
+  <script src="js/reading_olimp.js"></script>
+  <script src="js/speaking_olimp.js"></script>
+  <script src="js/irregulars_trainer.js"></script>
+  <script src="js/phonetics_trainer.js"></script>
+  <script src="js/general_trainer.js"></script>
+  <script src="js/ai_bayan_chat.js"></script>
+</body>
+</html>

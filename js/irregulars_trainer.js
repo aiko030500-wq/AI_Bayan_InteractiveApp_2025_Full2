@@ -3,6 +3,8 @@ p// ==============================
 // 45 Irregular + 27 Phrasal, separate tabs & scores
 // ==============================
 document.addEventListener("DOMContentLoaded", () => {
+  if (document.getElementById("irregularsContent")) initIrregularsTrainer();
+if (document.getElementById("phrasalVerbsContent")) initPhrasalVerbsTrainer();
   const screen = document.getElementById("irregulars_trainer");
   if (!screen) return;
 

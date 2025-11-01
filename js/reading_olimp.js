@@ -1,200 +1,456 @@
 // ==============================
-// 📖 AI Bayan — Reading Olympiad (A2–B1)
-// Дарын-стиль: 10 текстов, 3–4 вопроса к каждому
-// Сразу показываем правильность, даём ⭐, автопереход
-// Требует: #readingContent, #readingScore, #rPrev, #rNext и window.popStar()
+// 📖 AI Bayan — Reading Olympiad (10 texts, MCQ, stars & score)
+// Works with: #readingContent, #readingScore, #rPrev, #rNext
 // ==============================
 document.addEventListener("DOMContentLoaded", () => {
-  const box     = document.getElementById("readingContent");
+  const container = document.getElementById("readingContent");
   const scoreEl = document.getElementById("readingScore");
   const btnPrev = document.getElementById("rPrev");
   const btnNext = document.getElementById("rNext");
-  if (!box) return;
+  if (!container) return;
 
-  let ti = 0;          // индекс текста
-  let qi = 0;          // индекс вопроса внутри текста
-  let score = 0;
+  // ⭐ Star helper (uses global popStar if present)
+  function starBurst(x = null, y = null) {
+    if (typeof window.popStar === "function") {
+      window.popStar(x, y);
+      return;
+    }
+    const s = document.createElement("div");
+    s.textContent = "⭐";
+    Object.assign(s.style, {
+      position: "fixed",
+      left: x ? `${x}px` : `${Math.random() * 80 + 10}%`,
+      top: y ? `${y}px` : `${Math.random() * 60 + 20}%`,
+      fontSize: `${26 + Math.random() * 18}px`,
+      animation: "flyStar 1s ease-out forwards",
+      zIndex: 9999
+    });
+    document.body.appendChild(s);
+    setTimeout(() => s.remove(), 1000);
+  }
 
-  // 10 адаптированных «дарын-стиль» текстов (5–7 предложений) + вопросы
-  const texts = [
+  // Data — 10 olympiad-style texts (original, English-only)
+  const readingData = [
     {
-      title: "1) City Library Project",
-      text: "The new city library opened last spring after two years of renovation. It has a reading hall, a children’s corner, and a small café with healthy snacks. Volunteers help visitors find books and use computers. On weekends, the library runs free workshops on creative writing and public speaking. Many teenagers come to prepare for exams and group projects. The library is funded by local businesses and supported by the city council.",
+      title: "1) Library Day",
+      text:
+        "Today our class visited the city library. The librarian showed us how to find books using the catalogue and explained the rules for borrowing. I chose a book about explorers because I enjoy true stories about brave people. My best friend picked a book with jokes to read after homework. We promised to return the books on time and keep them clean.",
       questions: [
-        { q: "When did the library open?",            options: ["Last summer", "Last spring", "Two years ago", "This winter"], a: 1 },
-        { q: "What is NOT mentioned as a library area?", options: ["Children’s corner", "Café", "Gym", "Reading hall"], a: 2 },
-        { q: "True/False: Volunteers support visitors.", type: "tf", a: true },
-        { q: "Who supports the library financially?", options: ["Only the government", "Only volunteers", "Local businesses and the city council", "No one"], a: 2 }
+        { q: "Why did the narrator choose a book about explorers?", options: [
+          "Because it had colorful pictures only.",
+          "Because the librarian recommended it to everyone.",
+          "Because they enjoy true stories about brave people.",
+          "Because it was the only book left."
+        ], a: 2 },
+        { q: "What did the librarian show the class?", options: [
+          "How to pay for damaged books.",
+          "How to use the catalogue to find books.",
+          "How to write a book report.",
+          "How to print photos."
+        ], a: 1 },
+        { q: "What did the friend choose?", options: [
+          "A history book.",
+          "A book with jokes.",
+          "A science magazine.",
+          "A dictionary."
+        ], a: 1 },
+        { q: "What promise did the class make?", options: [
+          "To finish all books in one day.",
+          "To read only at school.",
+          "To return books on time and keep them clean.",
+          "To buy new books for the library."
+        ], a: 2 }
       ]
     },
     {
-      title: "2) Eco School Day",
-      text: "Once a month our school holds an Eco Day. Students collect paper, plant trees near the stadium, and check classrooms for energy saving. Teachers explain how small daily actions can help nature. The school newspaper publishes tips on recycling and reducing plastic. Parents are invited to join the activities and bring old batteries for safe disposal.",
+      title: "2) A Healthy Morning",
+      text:
+        "Nazgul wakes up early to stretch, drink a glass of water, and eat oatmeal with fruit. She walks to school instead of taking a bus when the weather is good. During breaks she stands up and moves around rather than checking her phone. In the evening, she helps her brother prepare a simple salad for dinner.",
       questions: [
-        { q: "How often is Eco Day?",                  options: ["Every week", "Every month", "Every day", "Twice a year"], a: 1 },
-        { q: "True/False: Students plant trees.",      type: "tf", a: true },
-        { q: "What does the school newspaper do?",     options: ["Sells plastic bottles", "Publishes recycling tips", "Organizes exams", "Prints sports tickets"], a: 1 }
+        { q: "What does Nazgul drink in the morning?", options: [
+          "Tea with sugar.",
+          "A glass of water.",
+          "Coffee with milk.",
+          "Orange juice."
+        ], a: 1 },
+        { q: "How does she usually go to school in good weather?", options: [
+          "By taxi.",
+          "By bicycle.",
+          "On foot.",
+          "By bus."
+        ], a: 2 },
+        { q: "What does she prefer to do during breaks?", options: [
+          "Sit and play games on her phone.",
+          "Stand up and move around.",
+          "Sleep at her desk.",
+          "Eat snacks."
+        ], a: 1 },
+        { q: "What do they prepare for dinner?", options: [
+          "A complicated cake.",
+          "A simple salad.",
+          "Fried chicken.",
+          "Pasta and sausages."
+        ], a: 1 }
       ]
     },
     {
-      title: "3) Weekend at the Lake",
-      text: "Last weekend my family travelled to a lake two hours from the city. We stayed in a small cabin and cooked dinner together. In the morning we rented bikes and followed a forest trail. The weather was sunny but windy, so we didn’t swim. In the evening we sat by the fire and shared funny stories. It was a simple trip, but everyone felt relaxed.",
+      title: "3) Weekend at the Zoo",
+      text:
+        "On Saturday, my family visited the zoo to learn more about animals and their habitats. We joined a short talk about endangered species and signed a poster to support protection programs. I liked the giraffes best because they moved calmly and looked curious. Before we left, we placed our plastic bottles in a recycling box near the exit.",
       questions: [
-        { q: "Where did the family stay?",             options: ["Hotel", "Cabin", "Tent", "Friend’s house"], a: 1 },
-        { q: "Why didn’t they swim?",                  options: ["It was windy", "It rained", "It was dark", "The water was frozen"], a: 0 },
-        { q: "True/False: They went cycling.",         type: "tf", a: true }
+        { q: "What was the main reason for the visit?", options: [
+          "To buy souvenirs.",
+          "To learn about animals and habitats.",
+          "To feed the animals.",
+          "To meet the zookeeper."
+        ], a: 1 },
+        { q: "What did the family sign?", options: [
+          "A birthday card.",
+          "A poster for protection programs.",
+          "A delivery form.",
+          "A holiday postcard."
+        ], a: 1 },
+        { q: "Which animals did the narrator like best?", options: [
+          "Penguins.",
+          "Giraffes.",
+          "Lions.",
+          "Monkeys."
+        ], a: 1 },
+        { q: "What did they do before leaving?", options: [
+          "Bought ice cream.",
+          "Threw bottles into the river.",
+          "Recycled plastic bottles.",
+          "Took a bus tour."
+        ], a: 2 }
       ]
     },
     {
-      title: "4) Young Inventors Fair",
-      text: "The Young Inventors Fair takes place every autumn in our city sports hall. School teams present devices that solve everyday problems. This year many projects were about clean water and cheap filters. Judges ask questions about safety and cost. The winners receive small grants to continue research. Some projects are later shown on local TV.",
+      title: "4) School Newspaper",
+      text:
+        "Our English teacher started a school newspaper to practice writing. Students report on events, interview teachers, and review books. I wrote an article about our robotics club, explaining how we test ideas and learn from mistakes. Next month, we plan to publish a special edition about science projects.",
       questions: [
-        { q: "When is the fair held?",                 options: ["In spring", "In summer", "In autumn", "In winter"], a: 2 },
-        { q: "True/False: Projects focused on clean water.", type: "tf", a: true },
-        { q: "What do winners get?",                   options: ["Scholarships to universities", "Small grants", "Trips abroad", "Sports equipment"], a: 1 }
+        { q: "Why did the teacher start a school newspaper?", options: [
+          "To practice writing.",
+          "To sell advertisements.",
+          "To replace English lessons.",
+          "To organize school trips."
+        ], a: 0 },
+        { q: "What did the narrator write about?", options: [
+          "A football match.",
+          "The school cafeteria.",
+          "The robotics club.",
+          "A birthday party."
+        ], a: 2 },
+        { q: "What will the next edition focus on?", options: [
+          "Sports competitions.",
+          "Science projects.",
+          "Holiday plans.",
+          "Art exhibitions."
+        ], a: 1 },
+        { q: "What do students do for the newspaper?", options: [
+          "They only draw cartoons.",
+          "They interview teachers and review books.",
+          "They print money.",
+          "They design school uniforms."
+        ], a: 1 }
       ]
     },
     {
-      title: "5) Cycling Club",
-      text: "Our cycling club meets early on Saturday mornings. Before each ride, the leader checks everyone’s helmets and lights. We follow quiet roads and stop to take photos of fields and rivers. New members learn how to repair a flat tyre. At the end, the group shares snacks and warm tea. The club welcomes beginners and experienced riders.",
+      title: "5) Journey by Train",
+      text:
+        "My cousin and I travelled by train to visit our grandparents. The seats were comfortable, and we could see fields and small villages through the window. A friendly conductor checked our tickets and told us the arrival time. We shared sandwiches and planned the games we would play with our little cousins.",
       questions: [
-        { q: "When does the club meet?",               options: ["Weekdays", "Saturday mornings", "Sunday evenings", "Every night"], a: 1 },
-        { q: "True/False: The leader checks safety equipment.", type: "tf", a: true },
-        { q: "Who can join the club?",                 options: ["Only professionals", "Only teenagers", "Beginners and experienced riders", "Only teachers"], a: 2 }
+        { q: "Where were they going?", options: [
+          "To a theme park.",
+          "To their grandparents.",
+          "To a museum.",
+          "To the seaside."
+        ], a: 1 },
+        { q: "Who checked their tickets?", options: [
+          "The chef.",
+          "The driver.",
+          "The conductor.",
+          "The guide."
+        ], a: 2 },
+        { q: "What did they see from the window?", options: [
+          "Skyscrapers and a stadium.",
+          "Fields and small villages.",
+          "Only tunnels.",
+          "A desert."
+        ], a: 1 },
+        { q: "What did they do on the train?", options: [
+          "Slept the whole time.",
+          "Argued with other passengers.",
+          "Shared sandwiches and planned games.",
+          "Watched a movie on a big screen."
+        ], a: 2 }
       ]
     },
     {
-      title: "6) Museum Night",
-      text: "Once a year the city museum opens at night with free entry. Visitors explore exhibitions with flashlights and listen to short talks by historians. Children can join a treasure hunt that teaches facts about the past. The museum café serves hot chocolate and apple pie. Many families say it is their favourite event of the year.",
+      title: "6) Helping a Neighbour",
+      text:
+        "When our elderly neighbour broke her arm, our class decided to help. We took turns walking her dog, watering plants, and carrying groceries. She told us stories about her childhood and thanked us with warm smiles. I learned that small actions can make people feel stronger and less lonely.",
       questions: [
-        { q: "How much is the entry fee?",             options: ["Free", "5 dollars", "10 dollars", "Depends on age"], a: 0 },
-        { q: "True/False: Visitors listen to talks by historians.", type: "tf", a: true },
-        { q: "What special activity is for children?", options: ["Movie night", "Treasure hunt", "Camping", "Sports contest"], a: 1 }
+        { q: "Why did the class help the neighbour?", options: [
+          "She broke her arm.",
+          "She moved to another city.",
+          "She was a new teacher.",
+          "She wanted to sell her house."
+        ], a: 0 },
+        { q: "What did students do?", options: [
+          "Painted the whole house.",
+          "Walked the dog and carried groceries.",
+          "Built a tree house.",
+          "Organized a concert."
+        ], a: 1 },
+        { q: "How did the neighbour thank them?", options: [
+          "With warm smiles and stories.",
+          "With a large party.",
+          "With expensive gifts.",
+          "With free tickets."
+        ], a: 0 },
+        { q: "What lesson did the narrator learn?", options: [
+          "Only big actions matter.",
+          "Helping others makes homework easier.",
+          "Small actions can make people feel stronger.",
+          "Dogs are always difficult."
+        ], a: 2 }
       ]
     },
     {
-      title: "7) After-School Coding",
-      text: "The after-school coding group helps students learn problem solving through simple games. First, members design levels on paper; then they create them on computers. The teacher encourages teamwork and clear instructions. Older students mentor beginners during practice. At the end of the term, teams present small projects to parents.",
+      title: "7) Green Saturday",
+      text:
+        "Our city held a 'Green Saturday' to clean the riverbank. Volunteers collected litter, sorted plastic and paper, and painted signs asking people to keep the area tidy. I worked with a group of younger students and showed them how to separate bottles and cans. By the afternoon, the park looked fresh and welcoming.",
       questions: [
-        { q: "What do students design first?",         options: ["Websites", "Phone apps", "Levels on paper", "Robots"], a: 2 },
-        { q: "True/False: Older students mentor beginners.", type: "tf", a: true },
-        { q: "Who watches the final projects?",        options: ["Parents", "Tourists", "Neighbours", "Only teachers"], a: 0 }
+        { q: "What was the event about?", options: [
+          "A sports competition.",
+          "Cleaning and protecting the riverbank.",
+          "Opening a new bridge.",
+          "Building a playground."
+        ], a: 1 },
+        { q: "What did volunteers do?", options: [
+          "Collected litter and sorted recyclables.",
+          "Practiced dancing.",
+          "Watched a film.",
+          "Sold snacks."
+        ], a: 0 },
+        { q: "Who did the narrator work with?", options: [
+          "Teachers only.",
+          "Parents only.",
+          "Younger students.",
+          "Tourists."
+        ], a: 2 },
+        { q: "How did the park look by afternoon?", options: [
+          "Crowded and noisy.",
+          "Fresh and welcoming.",
+          "Closed and dark.",
+          "Flooded after rain."
+        ], a: 1 }
       ]
     },
     {
-      title: "8) A Book That Changed Me",
-      text: "Last year our teacher recommended a novel about a teenager who moves to a new city. The hero learns to accept changes and builds friendships through kindness. I felt close to the character and started writing a diary. The diary helped me express ideas and practice English. Now I share book reviews with my classmates.",
+      title: "8) The Science Fair",
+      text:
+        "During the science fair, teams presented experiments and models. My team built a simple water filter using sand, stones, and charcoal. We explained how clean water can save lives in many parts of the world. The judges praised our clear steps and teamwork, and we received a special certificate.",
       questions: [
-        { q: "What did the teacher recommend?",        options: ["A poem", "A novel", "A play", "A comic"], a: 1 },
-        { q: "True/False: The narrator started a diary.", type: "tf", a: true },
-        { q: "What does the narrator share now?",      options: ["Book reviews", "Math projects", "Travel photos", "Songs"], a: 0 }
+        { q: "What did the team build?", options: [
+          "A solar car.",
+          "A water filter.",
+          "A robot teacher.",
+          "A wind turbine."
+        ], a: 1 },
+        { q: "What materials did they use?", options: [
+          "Sand, stones, and charcoal.",
+          "Clay and glass.",
+          "Metal and plastic only.",
+          "Paper and glue."
+        ], a: 0 },
+        { q: "What did they explain?", options: [
+          "Why camping is difficult.",
+          "How clean water helps people.",
+          "How to cook faster.",
+          "Why robots are friendly."
+        ], a: 1 },
+        { q: "What did the judges praise?", options: [
+          "Expensive equipment.",
+          "Clear steps and teamwork.",
+          "Loud music.",
+          "Fancy costumes."
+        ], a: 1 }
       ]
     },
     {
-      title: "9) Sports Day",
-      text: "Our school Sports Day takes place in early May. Classes compete in running, relay races, and long jump. Teachers organize fair rules and keep score. Parents bring water and cheer for the teams. The event builds school spirit and healthy habits. The winners receive medals at the closing ceremony.",
+      title: "9) After-School Chess Club",
+      text:
+        "At the chess club, we learn to plan moves and predict our opponent’s ideas. Our coach shows us classic games and explains why a simple move can change the result. Last week I lost quickly, but I wrote down my mistakes and improved. Now I help a new member practice openings.",
       questions: [
-        { q: "When is Sports Day?",                    options: ["Early May", "Late June", "January", "September"], a: 0 },
-        { q: "True/False: Only teachers compete.",     type: "tf", a: false },
-        { q: "What do winners get?",                   options: ["Books", "Medals", "Bikes", "Tickets"], a: 1 }
+        { q: "What do students learn at the chess club?", options: [
+          "How to play football.",
+          "How to plan moves and predict ideas.",
+          "How to make videos.",
+          "How to sing in a choir."
+        ], a: 1 },
+        { q: "What does the coach explain?", options: [
+          "How to draw cartoons.",
+          "Why simple moves matter.",
+          "How to dance.",
+          "How to repair computers."
+        ], a: 1 },
+        { q: "What happened last week to the narrator?", options: [
+          "They won a big prize.",
+          "They lost quickly but learned.",
+          "They didn’t come to the club.",
+          "They changed clubs."
+        ], a: 1 },
+        { q: "Who does the narrator help now?", options: [
+          "A new member.",
+          "The coach.",
+          "A younger sister.",
+          "A teacher."
+        ], a: 0 }
       ]
     },
     {
-      title: "10) Saving Water at Home",
-      text: "Our family decided to save water after a geography lesson. We take shorter showers and turn off the tap while brushing teeth. We also collect rainwater for the garden. At the end of the month we check the bill to see the difference. These simple steps are easy to follow and good for the planet.",
+      title: "10) My Dream School",
+      text:
+        "If I could design a school, every classroom would have quiet reading corners, plants, and a place for projects. Lessons would mix subjects, so we could use maths in art or science in music. We would meet experts online to ask real questions. The school would be safe, friendly, and open to new ideas.",
       questions: [
-        { q: "What do they collect for the garden?",   options: ["Tap water", "Rainwater", "Mineral water", "River water"], a: 1 },
-        { q: "True/False: They ignore the bill.",      type: "tf", a: false },
-        { q: "What is the main idea?",                 options: ["Saving water at home", "Buying new plants", "Swimming lessons", "Building a fountain"], a: 0 }
+        { q: "What would every classroom include?", options: [
+          "A swimming pool.",
+          "Quiet reading corners and plants.",
+          "A cinema screen.",
+          "A kitchen for each student."
+        ], a: 1 },
+        { q: "How would lessons be organized?", options: [
+          "Each subject alone without connections.",
+          "Only sports every day.",
+          "By mixing subjects together.",
+          "By removing projects."
+        ], a: 2 },
+        { q: "Who would students meet online?", options: [
+          "Actors from movies.",
+          "Friends from games.",
+          "Experts to ask real questions.",
+          "Chefs from restaurants."
+        ], a: 2 },
+        { q: "Which adjective best describes the dream school?", options: [
+          "Dangerous.",
+          "Boring.",
+          "Friendly.",
+          "Closed."
+        ], a: 2 }
       ]
     }
   ];
 
-  function render() {
-    const t = texts[ti];
-    const q = t.questions[qi];
-    const isTF = q.type === "tf";
+  // State
+  let index = 0;
+  let totalScore = 0;
 
-    box.innerHTML = `
-      <h3>${t.title}</h3>
-      <div class="reading-text card" style="white-space:pre-wrap">${t.text}</div>
-      <div class="question card">
-        <p><b>Q${qi + 1}.</b> ${q.q}</p>
-        <div class="options">
-          ${
-            isTF
-              ? `<button class="opt" data-i="true">True</button>
-                 <button class="opt" data-i="false">False</button>`
-              : q.options.map((opt,i)=>`<button class="opt" data-i="${i}">${String.fromCharCode(65+i)}. ${opt}</button>`).join("")
-          }
-        </div>
-      </div>
-      <div class="progress">Text ${ti + 1} of ${texts.length} — Question ${qi + 1} of ${t.questions.length}</div>
+  // Render one text with its questions
+  function renderText() {
+    const item = readingData[index];
+    const qHtml = item.questions
+      .map((qq, qi) => {
+        const opts = qq.options
+          .map((opt, oi) => {
+            const letter = String.fromCharCode(97 + oi); // a,b,c,d
+            return `<button class="opt" data-qi="${qi}" data-oi="${oi}">
+                      <span class="letter">${letter})</span> ${opt}
+                    </button>`;
+          })
+          .join("");
+        return `
+          <div class="q-block">
+            <p class="q-title">${qi + 1}. ${qq.q}</p>
+            <div class="opts">${opts}</div>
+          </div>`;
+      })
+      .join("");
+
+    container.innerHTML = `
+      <h3>${item.title}</h3>
+      <p class="r-text">${item.text}</p>
+      <div class="r-qs">${qHtml}</div>
+      <div class="progress">Text ${index + 1} / ${readingData.length}</div>
     `;
-    scoreEl.textContent = score;
 
-    box.querySelectorAll(".opt").forEach(btn=>{
-      btn.addEventListener("click",(e)=>{
-        let chosen;
-        if (isTF) {
-          chosen = (e.currentTarget.dataset.i === "true");
-          if (chosen === q.a) {
-            score++; scoreEl.textContent = score; if (window.popStar) popStar();
-          }
+    // click handlers
+    container.querySelectorAll(".opt").forEach((btn) => {
+      btn.addEventListener("click", (e) => {
+        const b = e.currentTarget;
+        const qi = parseInt(b.dataset.qi);
+        const oi = parseInt(b.dataset.oi);
+        const correct = readingData[index].questions[qi].a;
+
+        // если уже отвечено на этот вопрос — блокируем повторный подсчёт
+        const block = b.closest(".q-block");
+        if (block.classList.contains("answered")) return;
+
+        // подсветка
+        const all = block.querySelectorAll(".opt");
+        all.forEach((x) => x.disabled = true);
+        if (oi === correct) {
+          b.classList.add("ok");
+          totalScore++;
+          scoreEl.textContent = totalScore;
+          starBurst(e.clientX, e.clientY);
         } else {
-          const idx = parseInt(e.currentTarget.dataset.i,10);
-          if (idx === q.a) {
-            score++; scoreEl.textContent = score; if (window.popStar) popStar();
-            if (i === q.a) { score++; popStar(); addScore("Reading", 1); }
-            addScore("Speaking", 1);
+          b.classList.add("bad");
+          all[correct].classList.add("ok");
         }
-        nextStep();
+        block.classList.add("answered");
       });
     });
+
+    // Кнопки навигации
+    btnPrev.disabled = index === 0;
+    btnNext.textContent = (index === readingData.length - 1) ? "✅ Finish" : "➡️ Next";
   }
 
-  function nextStep() {
-    const t = texts[ti];
-    if (qi < t.questions.length - 1) {
-      qi++;
-      render();
+  // Navigation
+  if (btnPrev) btnPrev.addEventListener("click", () => {
+    if (index > 0) {
+      index--;
+      renderText();
+    }
+  });
+  if (btnNext) btnNext.addEventListener("click", () => {
+    if (index < readingData.length - 1) {
+      index++;
+      renderText();
     } else {
-      // следующий текст
-      if (ti < texts.length - 1) {
-        ti++; qi = 0;
-        render();
-      } else {
-        finish();
-      }
-    }
-  }
-
-  function finish() {
-    box.innerHTML = `
-      <h2>🎉 Reading complete!</h2>
-      <p>⭐ Your score: <b>${score}</b> / ${totalQuestions()}</p>
-      <button class="back" onclick="show('menu')">🏠 Back to Menu</button>
-    `;
-  }
-
-  function totalQuestions() {
-    return texts.reduce((sum,t)=> sum + t.questions.length, 0);
-  }
-
-  btnPrev && btnPrev.addEventListener("click", ()=>{
-    if (qi > 0) {
-      qi--; render();
-    } else if (ti > 0) {
-      ti--; qi = texts[ti].questions.length - 1; render();
+      // Final screen
+      container.innerHTML = `
+        <div class="final-screen">
+          <h2>🎉 Reading Olympiad Complete!</h2>
+          <p>Your total score: <b>${totalScore}</b> / ${readingData.length * 4}</p>
+          <button onclick="show('menu')">🏠 Back to Menu</button>
+        </div>
+      `;
+      btnPrev.disabled = true;
+      btnNext.disabled = true;
     }
   });
 
-  btnNext && btnNext.addEventListener("click", ()=>{
-    const t = texts[ti];
-    if (qi < t.questions.length - 1 || ti < texts.length - 1) {
-      nextStep();
-    }
-  });
+  // minimal CSS helpers (optional)
+  const style = document.createElement("style");
+  style.textContent = `
+    #reading .r-text { margin: 10px 0 16px; line-height: 1.5; }
+    #reading .q-block { margin: 12px 0 16px; padding: 10px; border-radius: 10px; background: #fff8e6; }
+    #reading .q-title { margin: 0 0 8px; font-weight: 600; }
+    #reading .opts { display: grid; gap: 6px; }
+    #reading .opt { text-align: left; padding: 8px 10px; border-radius: 8px; border: 1px solid #ddd; background: #fff; cursor: pointer; }
+    #reading .opt:hover { border-color: #aaa; }
+    #reading .opt.ok { background: #e6ffef; border-color: #26a65b; }
+    #reading .opt.bad { background: #ffecec; border-color: #e74c3c; }
+    #reading .letter { font-weight: 700; margin-right: 6px; }
+    #reading .progress { margin-top: 8px; color: #555; }
+    @keyframes flyStar { from{ transform: translateY(0) scale(0.8); opacity:1;} to{ transform: translateY(-90px) scale(1.4); opacity:0; } }
+  `;
+  document.head.appendChild(style);
 
-  render();
+  // Start
+  scoreEl.textContent = "0";
+  renderText();
 });

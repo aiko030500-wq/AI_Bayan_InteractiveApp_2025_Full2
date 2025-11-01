@@ -1,229 +1,134 @@
+    // ==============================
+// 📘 AI Bayan General English Trainer — 2025
+// Includes: Irregular Verbs + Phrasal Verbs
 // ==============================
-// 📘 AI Bayan — General English Trainer (v2025)
-// Includes 11 modules: Irregulars + 10 topics
-// ==============================
 
-document.addEventListener("DOMContentLoaded", () => {
-  const genTitle = document.getElementById("genTitle");
-  const genInstr = document.getElementById("genInstr");
-  const genContent = document.getElementById("genContent");
-  const genScore = document.getElementById("genScore");
-  const nextBtn = document.getElementById("genNext");
-  const prevBtn = document.getElementById("genPrev");
+// ---------- IRREGULAR VERBS ----------
+function initIrregularsTrainer() {
+  const data = [
+    ["be", "was/were", "been", "быть"],
+    ["begin", "began", "begun", "начинать"],
+    ["break", "broke", "broken", "ломать"],
+    ["bring", "brought", "brought", "приносить"],
+    ["buy", "bought", "bought", "покупать"],
+    ["choose", "chose", "chosen", "выбирать"],
+    ["come", "came", "come", "приходить"],
+    ["do", "did", "done", "делать"],
+    ["drink", "drank", "drunk", "пить"],
+    ["eat", "ate", "eaten", "есть"],
+    ["find", "found", "found", "находить"],
+    ["fly", "flew", "flown", "летать"],
+    ["forget", "forgot", "forgotten", "забывать"],
+    ["get", "got", "got", "получать"],
+    ["give", "gave", "given", "давать"],
+    ["go", "went", "gone", "идти"],
+    ["have", "had", "had", "иметь"],
+    ["know", "knew", "known", "знать"],
+    ["leave", "left", "left", "уходить"],
+    ["make", "made", "made", "делать, создавать"],
+    ["meet", "met", "met", "встречать"],
+    ["put", "put", "put", "класть"],
+    ["read", "read", "read", "читать"],
+    ["run", "ran", "run", "бежать"],
+    ["say", "said", "said", "говорить"],
+    ["see", "saw", "seen", "видеть"],
+    ["sell", "sold", "sold", "продавать"],
+    ["send", "sent", "sent", "отправлять"],
+    ["sing", "sang", "sung", "петь"],
+    ["sit", "sat", "sat", "сидеть"],
+    ["sleep", "slept", "slept", "спать"],
+    ["speak", "spoke", "spoken", "говорить"],
+    ["stand", "stood", "stood", "стоять"],
+    ["swim", "swam", "swum", "плавать"],
+    ["take", "took", "taken", "брать"],
+    ["teach", "taught", "taught", "учить"],
+    ["tell", "told", "told", "рассказывать"],
+    ["think", "thought", "thought", "думать"],
+    ["write", "wrote", "written", "писать"]
+  ];
 
-  if (!genContent) return;
+  const content = document.getElementById("irregularsContent");
+  if (!content) return;
+  let i = 0;
+  content.innerHTML = buildCard(i);
 
-  // 🌟 Score and question control
-  let currentQ = 0;
-  let score = 0;
-  let currentModule = "mod-irregulars";
-
-  // ======================
-  // MODULE DATA
-  // ======================
-  const modules = {};
-
-  // 1️⃣ Irregular Verbs
-  modules["mod-irregulars"] = {
-    title: "🔁 Irregular Verbs",
-    instr: "Choose the correct past form of each verb:",
-    data: [
-      { q: "go → ?", options: ["went", "goed", "gone", "goes"], a: 0 },
-      { q: "see → ?", options: ["saw", "seed", "seen", "see"], a: 0 },
-      { q: "come → ?", options: ["came", "comed", "comes", "come"], a: 0 },
-      { q: "eat → ?", options: ["ate", "eated", "eaten", "eat"], a: 0 },
-      { q: "write → ?", options: ["wrote", "writed", "writes", "write"], a: 0 },
-      { q: "run → ?", options: ["ran", "runned", "run", "running"], a: 0 }
-    ]
-  };
-
-  // 2️⃣ Clock
-  modules["mod-clock"] = {
-    title: "🕒 Clock & Time",
-    instr: "Choose the correct time expression:",
-    data: [
-      { q: "07:30 = ?", options: ["half past seven", "seven and half", "thirty seven", "seven thirty past"], a: 0 },
-      { q: "15:15 = ?", options: ["quarter past three", "three fifteen", "quarter to three", "fifteen three"], a: 0 },
-      { q: "20:45 = ?", options: ["quarter to nine", "nine quarter", "twenty forty-five", "eight quarter"], a: 0 },
-      { q: "12:00 = ?", options: ["twelve o’clock", "midday clock", "twelve sharp", "half twelve"], a: 0 },
-    ]
-  };
-
-  // 3️⃣ To Be
-  modules["mod-tobe"] = {
-    title: "✅ Verb To Be",
-    instr: "Choose the correct form of ‘to be’:",
-    data: [
-      { q: "I ___ a student.", options: ["is", "are", "am", "be"], a: 2 },
-      { q: "They ___ happy.", options: ["is", "are", "am", "was"], a: 1 },
-      { q: "She ___ at home.", options: ["are", "is", "am", "were"], a: 1 },
-      { q: "We ___ friends.", options: ["am", "is", "are", "been"], a: 2 },
-    ]
-  };
-
-  // 4️⃣ Phonetics
-  modules["mod-phon"] = {
-    title: "🔤 Phonetics — Sounds",
-    instr: "Choose the word with the same sound:",
-    data: [
-      { q: "‘Cat’ rhymes with:", options: ["hat", "cut", "cot", "caught"], a: 0 },
-      { q: "‘See’ sounds like:", options: ["tree", "tea", "say", "sea"], a: 3 },
-      { q: "‘Book’ rhymes with:", options: ["look", "cook", "took", "all"], a: 0 },
-      { q: "‘Fine’ rhymes with:", options: ["nine", "fan", "none", "find"], a: 0 },
-    ]
-  };
-
-  // 5️⃣ Silent Letters
-  modules["mod-silent"] = {
-    title: "🤫 Silent Letters",
-    instr: "Choose the word with a silent letter:",
-    data: [
-      { q: "Which has a silent 'k'?", options: ["know", "king", "kite", "key"], a: 0 },
-      { q: "Which has a silent 'w'?", options: ["write", "water", "wait", "white"], a: 0 },
-      { q: "Which has a silent 'b'?", options: ["climb", "bomb", "cab", "baby"], a: 0 },
-      { q: "Which has a silent 'g'?", options: ["sign", "green", "go", "give"], a: 0 },
-    ]
-  };
-
-  // 6️⃣ Articles
-  modules["mod-articles"] = {
-    title: "🔹 Articles (a/an/the)",
-    instr: "Choose the correct article:",
-    data: [
-      { q: "I saw ___ elephant.", options: ["a", "an", "the", "no article"], a: 1 },
-      { q: "He bought ___ car yesterday.", options: ["a", "an", "the", "no article"], a: 0 },
-      { q: "___ sun is bright today.", options: ["a", "an", "the", "no article"], a: 2 },
-      { q: "She doesn’t like ___ milk.", options: ["a", "an", "the", "no article"], a: 3 },
-    ]
-  };
-
-  // 7️⃣ Phrasal Verbs
-  modules["mod-phrasal"] = {
-    title: "🧩 Phrasal Verbs",
-    instr: "Choose the correct phrasal meaning:",
-    data: [
-      { q: "Turn off", options: ["switch off", "run away", "go out", "look after"], a: 0 },
-      { q: "Look after", options: ["care for", "find", "search", "see"], a: 0 },
-      { q: "Give up", options: ["stop trying", "donate", "stand up", "go down"], a: 0 },
-      { q: "Wake up", options: ["open eyes", "sleep", "stand", "go to bed"], a: 0 },
-    ]
-  };
-
-  // 8️⃣ Synonyms
-  modules["mod-syn"] = {
-    title: "🧠 Synonyms",
-    instr: "Choose the word with similar meaning:",
-    data: [
-      { q: "Big", options: ["large", "small", "tiny", "thin"], a: 0 },
-      { q: "Happy", options: ["sad", "glad", "mad", "angry"], a: 1 },
-      { q: "Quick", options: ["fast", "slow", "late", "lazy"], a: 0 },
-      { q: "Begin", options: ["start", "end", "finish", "close"], a: 0 },
-    ]
-  };
-
-  // 9️⃣ Antonyms
-  modules["mod-ant"] = {
-    title: "⚡ Antonyms",
-    instr: "Choose the opposite word:",
-    data: [
-      { q: "Hot", options: ["cold", "warm", "wet", "dry"], a: 0 },
-      { q: "Old", options: ["new", "young", "modern", "fresh"], a: 0 },
-      { q: "Easy", options: ["hard", "light", "soft", "low"], a: 0 },
-      { q: "Up", options: ["down", "top", "over", "under"], a: 0 },
-    ]
-  };
-
-  // 🔟 Numerals
-  modules["mod-num"] = {
-    title: "🔢 Numerals",
-    instr: "Choose the correct number form:",
-    data: [
-      { q: "15th", options: ["fifteen", "fifteenth", "fifty", "five teen"], a: 1 },
-      { q: "21st", options: ["twenty-one", "twenty-first", "twenty one-th", "twenty firsts"], a: 1 },
-      { q: "100", options: ["hundred", "hundreds", "one hundred", "a hundredth"], a: 2 },
-      { q: "1000", options: ["thousand", "one thousand", "a thousandth", "thousands"], a: 1 },
-    ]
-  };
-
-  // 11️⃣ Plural Nouns
-  modules["mod-plural"] = {
-    title: "👥 Plural Nouns",
-    instr: "Choose the correct plural form:",
-    data: [
-      { q: "Child → ?", options: ["childs", "children", "childes", "childrens"], a: 1 },
-      { q: "Foot → ?", options: ["foots", "feets", "feet", "footes"], a: 2 },
-      { q: "Man → ?", options: ["mans", "mens", "man", "men"], a: 3 },
-      { q: "Mouse → ?", options: ["mouses", "mice", "mouse", "meese"], a: 1 },
-    ]
-  };
-
-  // ======================
-  // RENDER FUNCTION
-  // ======================
-  function showQuestion() {
-    const mod = modules[currentModule];
-    const q = mod.data[currentQ];
-    genTitle.textContent = mod.title;
-    genInstr.textContent = mod.instr;
-    genContent.innerHTML = `
-      <h3>${currentQ + 1}. ${q.q}</h3>
-      ${q.options
-        .map(
-          (opt, i) =>
-            `<button class="genOpt" data-i="${i}">${opt}</button>`
-        )
-        .join("<br>")}
-      <p class="progress">Question ${currentQ + 1} of ${mod.data.length}</p>
+  function buildCard(i) {
+    const [v1, v2, v3, tr] = data[i];
+    return `
+      <h3>${i + 1}. ${v1}</h3>
+      <p><b>Past Simple:</b> ${v2}</p>
+      <p><b>Past Participle:</b> ${v3}</p>
+      <p><i>Translation:</i> ${tr}</p>
+      <div class="progress">Word ${i + 1} of ${data.length}</div>
     `;
-    genScore.textContent = score;
-    document.querySelectorAll(".genOpt").forEach((b) => {
-      b.onclick = () => checkAnswer(parseInt(b.dataset.i));
-    });
   }
 
-  function checkAnswer(i) {
-    const mod = modules[currentModule];
-    if (i === mod.data[currentQ].a) {
-      score++;
-      genScore.textContent = score;
-      popStar();
-      if (right) { score++; popStar(); addScore("General", 1); }
-    }
-    if (currentQ < mod.data.length - 1) {
-      currentQ++;
-      showQuestion();
-    } else {
-      genContent.innerHTML = `<h3>🎉 Module Complete!</h3>
-      <p>Your score: ${score} / ${mod.data.length}</p>`;
-    }
+  document.getElementById("irPrev").onclick = () => {
+    if (i > 0) { i--; content.innerHTML = buildCard(i); }
+  };
+  document.getElementById("irNext").onclick = () => {
+    if (i < data.length - 1) { i++; content.innerHTML = buildCard(i); }
+  };
+}
+
+// ---------- PHRASAL VERBS ----------
+function initPhrasalVerbsTrainer() {
+  const data = [
+    ["look after", "to take care of someone or something", "заботиться о ком-то / чем-то"],
+    ["turn on", "to start a machine or light", "включать"],
+    ["turn off", "to stop a machine or light", "выключать"],
+    ["wake up", "to stop sleeping", "просыпаться"],
+    ["get up", "to rise from bed", "вставать"],
+    ["put on", "to dress or wear something", "надевать"],
+    ["take off", "to remove clothes or depart", "снимать (одежду), взлетать"],
+    ["look for", "to search for", "искать"],
+    ["give up", "to stop doing something", "сдаваться, бросать"],
+    ["go out", "to leave home for social activity", "выходить гулять"],
+    ["come back", "to return", "возвращаться"],
+    ["run out of", "to finish the supply of something", "закончиться"],
+    ["look forward to", "to await something with pleasure", "с нетерпением ждать"],
+    ["find out", "to discover", "узнать"],
+    ["set up", "to arrange or organize", "организовать, настроить"],
+    ["fill in", "to complete a form", "заполнить"],
+    ["take care of", "to protect or look after", "заботиться"],
+    ["throw away", "to discard", "выбрасывать"],
+    ["turn down", "to reduce volume or reject", "убавить, отклонить"],
+    ["turn up", "to increase volume or appear", "прибавить, появиться"],
+    ["get on with", "to have a good relationship", "ладить"],
+    ["come in", "to enter", "входить"],
+    ["carry on", "to continue", "продолжать"],
+    ["check in", "to register (hotel/airport)", "зарегистрироваться"],
+    ["check out", "to leave after paying", "выписаться"],
+    ["break down", "to stop working (machine)", "сломаться"],
+    ["pick up", "to collect or lift", "подбирать"]
+  ];
+
+  const content = document.getElementById("phrasalVerbsContent");
+  if (!content) return;
+  let i = 0;
+  content.innerHTML = buildCard(i);
+
+  function buildCard(i) {
+    const [verb, def, tr] = data[i];
+    return `
+      <h3>${i + 1}. ${verb}</h3>
+      <p><b>Meaning:</b> ${def}</p>
+      <p><i>Translation:</i> ${tr}</p>
+      <div class="progress">Verb ${i + 1} of ${data.length}</div>
+    `;
   }
 
-  // NAVIGATION BUTTONS
-  nextBtn.onclick = () => {
-    if (currentQ < modules[currentModule].data.length - 1) {
-      currentQ++;
-      showQuestion();
-    }
+  document.getElementById("phPrev").onclick = () => {
+    if (i > 0) { i--; content.innerHTML = buildCard(i); }
   };
-  prevBtn.onclick = () => {
-    if (currentQ > 0) {
-      currentQ--;
-      showQuestion();
-    }
+  document.getElementById("phNext").onclick = () => {
+    if (i < data.length - 1) { i++; content.innerHTML = buildCard(i); }
   };
+}
 
-  // TAB SWITCHING
-  document.querySelectorAll(".subtab").forEach((tab) => {
-    tab.onclick = () => {
-      document.querySelectorAll(".subtab").forEach((t) => t.classList.remove("active"));
-      tab.classList.add("active");
-      currentModule = tab.getAttribute("data-sub");
-      currentQ = 0;
-      score = 0;
-      showQuestion();
-    };
-  });
-
-  // INIT
-  showQuestion();
+// ---------- AUTO-INIT ----------
+document.addEventListener("DOMContentLoaded", () => {
+  if (document.getElementById("irregularsContent")) initIrregularsTrainer();
+  if (document.getElementById("phrasalVerbsContent")) initPhrasalVerbsTrainer();
 });
+      
